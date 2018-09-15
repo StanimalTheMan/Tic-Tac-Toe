@@ -58,7 +58,7 @@ const tic = {
         if (algebraicNotation.length >= 3 || algebraicNotation.length <= 1) {
             return undefined;
         }
-        if (algebraicNotation.charAt(0) < 'A' || algebraicNotation > 'Z') {
+        if (algebraicNotation.charAt(0) < 'A' || algebraicNotation.charAt(0) > 'Z') {
             return undefined;
         }
         const rowCol = {};

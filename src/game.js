@@ -1,5 +1,6 @@
 // game.js
-const arr = process.argv ? JSON.parse(process.argv[2]) : undefined;
+//I assume person will input the correct arguments to arr so I don't have to check if arr is undefined when I assign to computerMoves and userMoves
+const arr = process.argv[2] ? JSON.parse(process.argv[2]) : undefined;
 let computerMoves = arr[0];
 let userMoves = arr[1];
 

@@ -170,7 +170,7 @@ if (userLetter === "O") {
             const arr = computerMoves.splice(0, 1)[0];
             //console.log(arr);
             //make sure it's a valid move!
-            console.log(computerMove);
+            //console.log(computerMove);
             if (tic.isValidMove(board, arr[0], arr[1])) {
                 computerMove = {'row':arr[0], 'col':arr[1]};
                 board = tic.placeLetters(board, compLetter, tic.cellIndexAlgebraicNot(board, tic.toIndex(board, computerMove.row, computerMove.col)));

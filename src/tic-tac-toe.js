@@ -185,7 +185,7 @@ const tic = {
                     }
                 }
             }
-            winnerColDetermine = true;
+            winnerColDetermined = true;
             colStartIndex++;
         }
         return undefined;

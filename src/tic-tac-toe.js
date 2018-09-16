@@ -94,6 +94,158 @@ const tic = {
         }
         return board;
     },
+    boardToString: function(board) {
+        let boardString = "     ";
+        //column label
+        for (let i = 1; i <= Math.sqrt(board.length); i++) {
+            if (i === Math.sqrt(board.length)) {
+                boardString += i;
+                boardString += "  \n   ";
+            } else {
+                boardString += i;
+                boardString += "   ";
+            }
+        }
+        let rowStartIndex = 0;
+        let rowLabel = 65;
+        //final row border in first if scenario
+        for (let i = 1; i <= Math.sqrt(board.length) + 1; i++) {
+            if (i === Math.sqrt(board.length) + 1) {
+                for (let j = 1; j <= Math.sqrt(board.length) + 1; j++) {
+                    if (j === Math.sqrt(board.length) + 1) {
+                        boardString += "+\n";
+                    } else {
+                        boardString += "+---";
+                    }
+                }
+            } else {//row border and corresponding row
+                for (let j = 1; j <= Math.sqrt(board.length) + 1; j++) {
+                    if (j === Math.sqrt(board.length) + 1) {
+                        boardString += "+\n ";
+                        boardString += String.fromCodePoint(rowLabel);
+                        boardString += " ";
+                        for (let k = rowStartIndex; k <= rowStartIndex + Math.sqrt(board.length) - 1; k++) {
+                            if(board[k] !== "") {
+                                boardString += "| ";
+                                boardString += board[k];
+                                boardString += " ";
+                            } else {
+                                boardString += "|   ";
+                            }
+                        }
+                        boardString += "|\n   ";
+                        rowStartIndex += Math.sqrt(board.length);
+                        rowLabel++;
+                    } else {
+                        boardString += "+---";
+                    }
+                }
+            }
+        }
+        return boardString;
+    }, 
+    getWinnerRows: function(board) {
+        let rowStartIndex = 0;
+        const numRows = Math.sqrt(board.length);
+        let winnerRowDetermined = true;//initially assumes that a winner can be found in a row
+        for (let i = 0; i < numRows; i++) {
+            let firstElementOfRow = board[rowStartIndex];
+            if (firstElementOfRow !== "") {            
+                for (let j = rowStartIndex + 1; j <= rowStartIndex + Math.sqrt(board.length) - 1; j++) {
+                    if (board[j] !== firstElementOfRow) {
+                        winnerRowDetermined = false;
+                        break;
+                    } else if (winnerRowDetermined && j === rowStartIndex + Math.sqrt(board.length) - 1 && board[j] === firstElementOfRow) {
+                        return board[j];
+                    }
+                }
+            }
+            rowStartIndex += Math.sqrt(board.length);
+        }
+        return undefined;
+    },
+    getWinnerCols: function(board) {
+        let colStartIndex = 0;
+        const numColumns = Math.sqrt(board.length);
+        let winnerColDetermined = true;//initially assumes that a winner can be found in a column
+        for (let i = 0; i < numColumns; i++) {
+            let firstElementOfColumn = board[colStartIndex];
+            if (firstElementOfColumn !== "") {
+                for (let j = colStartIndex + Math.sqrt(board.length); j < board.length; j += Math.sqrt(board.length)) {
+                    if (board[j] !== firstElementOfColumn) {
+                        winnerColDetermined = false;
+                        break;
+                    } else if (winnerColDetermined && j >= board.length - Math.sqrt(board.length) && board[j] === firstElementOfColumn) {
+                        return board[j];
+                    }
+                }
+            }
+            colStartIndex++;
+        }
+        return undefined;
+    },
+    getWinnerDiagonals: function(board) {
+        let winnerDiagonalDetermined = true;// initially assumes that a winner can be found via  diagonal
+        //examine board upper right to lower left
+        let upperRightStartIndex = Math.sqrt(board.length) - 1;
+        let firstElementOfUpperRight = board[upperRightStartIndex];
+        if (firstElementOfUpperRight !== "") {
+            for (let j = upperRightStartIndex + upperRightStartIndex; j < board.length; j += upperRightStartIndex) {
+                if (board[j] !== firstElementOfUpperRight) {
+                    winnerDiagonalDetermined = false;
+                    break;
+                } else if (winnerDiagonalDetermined && j === board.length - Math.sqrt(board.length) && board[j] === firstElementOfUpperRight) {
+                    return board[j];
+                }
+            }
+        }
+        
+        //reset flag
+        winnerDiagonalDetermined = true;
+
+        //examine board upper left to lower irght
+        let upperLeftStartIndex = 0;
+        let firstElementOfUpperLeft = board[upperLeftStartIndex];
+        if (firstElementOfUpperLeft !== "") {
+            for (let i = upperLeftStartIndex + Math.sqrt(board.length) + 1; i < board.length; i += Math.sqrt(board.length) + 1) {
+                if (board[i] !== firstElementOfUpperLeft) {
+                    winnerDiagonalDetermined = false;
+                    break;
+                } else if (winnerDiagonalDetermined &&  i === board.length - 1 && board[i] === firstElementOfUpperLeft) {
+                    return board[i];
+                }
+            }
+        }
+        return undefined;
+    },
+    //helper function that enables use of Array method, some
+    isNotFull: function(element) {
+        return element === "";
+    },
+    isBoardFull: function(board) {
+        return !board.some(tic.isNotFull);
+    },
+    isValidMove: function(board, row, col) {
+        const boardIndex = tic.toIndex(board, row, col);
+        if (boardIndex <= board.length - 1) {
+           return board[boardIndex] === "";
+        }
+        return false;
+    },
+    isValidMoveAlgebraicNotation(board, algebraicNotation) {
+        const rowCol = tic.algebraicToRowCol(algebraicNotation);
+        return tic.isValidMove(board, rowCol.row, rowCol.col);
+    },
+    getRandomEmptyCellIndex(board) {
+        const emptyCellIndicesArray = [];
+        for (let i = 0; i < board.length; i++) {
+            if (board[i] === "") {
+                emptyCellIndicesArray.push(i);
+            }
+        }
+        const randomIndex = Math.floor(Math.random() * emptyCellIndicesArray.length);
+        return emptyCellIndicesArray[randomIndex];
+    }
 }
 
 module.exports = tic;

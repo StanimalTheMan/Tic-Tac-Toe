@@ -73,23 +73,23 @@ const tic = {
         }
         return rowCol;
     },
-    placeLetters: function(board, ...lengthOrAlgebraicNotation) {
-        if (lengthOrAlgebraicNotation.length % 2 === 1) {
-            for (let i = 0; i < lengthOrAlgebraicNotation.length - 1; i += 2) {
-                const rowCol = tic.algebraicToRowCol(lengthOrAlgebraicNotation[i + 1]);
+    placeLetters: function(board, ...letterOrAlgebraicNotation) {
+        if (letterOrAlgebraicNotation.length % 2 === 1) {
+            for (let i = 0; i < letterOrAlgebraicNotation.length - 1; i += 2) {
+                const rowCol = tic.algebraicToRowCol(letterOrAlgebraicNotation[i + 1]);
                 if (rowCol === undefined || board[tic.toIndex(board, rowCol.row, rowCol.col)] !== "") {
                     continue;
                 } 
-                board = tic.setBoardCell(board, lengthOrAlgebraicNotation[i], rowCol.row, rowCol.col);
+                board = tic.setBoardCell(board, letterOrAlgebraicNotation[i], rowCol.row, rowCol.col);
             }
         }
         else {//even number of arguments after board, probably bad I am using a very similar for loop
-            for (let i = 0; i < lengthOrAlgebraicNotation.length; i += 2) {
-                const rowCol = tic.algebraicToRowCol(lengthOrAlgebraicNotation[i + 1]);
+            for (let i = 0; i < letterOrAlgebraicNotation.length; i += 2) {
+                const rowCol = tic.algebraicToRowCol(letterOrAlgebraicNotation[i + 1]);
                 if (rowCol === undefined || board[tic.toIndex(board, rowCol.row, rowCol.col)] !== "") {
                     continue;
                 } 
-                board = tic.setBoardCell(board, lengthOrAlgebraicNotation[i], rowCol.row, rowCol.col);
+                board = tic.setBoardCell(board, letterOrAlgebraicNotation[i], rowCol.row, rowCol.col);
             }
         }
         return board;
@@ -157,9 +157,12 @@ const tic = {
                         break;
                     } else if (winnerRowDetermined && j === rowStartIndex + Math.sqrt(board.length) - 1 && board[j] === firstElementOfRow) {
                         return board[j];
+                    } else {
+                        continue;
                     }
                 }
             }
+            winnerRowDetermined = true;
             rowStartIndex += Math.sqrt(board.length);
         }
         return undefined;
@@ -177,9 +180,12 @@ const tic = {
                         break;
                     } else if (winnerColDetermined && j >= board.length - Math.sqrt(board.length) && board[j] === firstElementOfColumn) {
                         return board[j];
+                    } else {
+                        continue;
                     }
                 }
             }
+            winnerColDetermine = true;
             colStartIndex++;
         }
         return undefined;
@@ -196,6 +202,8 @@ const tic = {
                     break;
                 } else if (winnerDiagonalDetermined && j === board.length - Math.sqrt(board.length) && board[j] === firstElementOfUpperRight) {
                     return board[j];
+                } else {
+                    continue;
                 }
             }
         }
@@ -234,7 +242,10 @@ const tic = {
     },
     isValidMoveAlgebraicNotation(board, algebraicNotation) {
         const rowCol = tic.algebraicToRowCol(algebraicNotation);
-        return tic.isValidMove(board, rowCol.row, rowCol.col);
+        if (rowCol !== undefined) {
+            return tic.isValidMove(board, rowCol.row, rowCol.col);
+        }
+        return false;
     },
     getRandomEmptyCellIndex(board) {
         const emptyCellIndicesArray = [];
@@ -245,6 +256,23 @@ const tic = {
         }
         const randomIndex = Math.floor(Math.random() * emptyCellIndicesArray.length);
         return emptyCellIndicesArray[randomIndex];
+    },
+    //helper function to convert array index into algebraic notation
+    cellIndexAlgebraicNot: function(board, cellIndex) {
+        let algebraicNot = "";
+        let letterAsciiValue = 65;//66 is 'A'
+        let lastCellOfRowIndex = Math.sqrt(board.length) - 1;
+        for (let i = 1; i <= Math.sqrt(board.length); i++) {
+            if (cellIndex <= lastCellOfRowIndex) {
+                algebraicNot += String.fromCodePoint(letterAsciiValue);
+                algebraicNot += Math.floor(cellIndex % Math.sqrt(board.length)) + 1; 
+                break;
+            } else {
+                letterAsciiValue++;
+                lastCellOfRowIndex += Math.sqrt(board.length);
+            }
+        }
+        return algebraicNot;
     }
 }
 

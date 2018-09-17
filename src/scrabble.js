@@ -21,11 +21,10 @@ function main() {
     //array of word/score objects 
     let wordScoreArray = [];
     //ask user for some letters
-    userPrompt.question("Please enter some letters: ", (response) => {handleUserInput(userPrompt, wordScoreArray, response); });
-
-
-    
+    userPrompt.question("Please enter some letters:\n", (response) => {handleUserInput(userPrompt, wordScoreArray, response); });
 }
+
+
 
 function fileReader(err, data) {
     if (err) {
@@ -43,46 +42,59 @@ function handleUserInput(userPrompt, wordScoreArray, response) {
     let wordScoreObj = {};
     let wordScore = 0;
     let userInputCopy = response;
-    let userInputCopyArray = userInputCopy.split();
+    let userInputCopyArray = [...userInputCopy]; //use of spread operator to convert string to character array
     //go through every word in the word list
     for (let word of wordsList) {
-        while (userInputCopyArray.length > 0) {
-            if (userInputCopyArray.includes(word.charAt(0))) {
-                if (letterValues.hasOwnProperty(word.charAt(0).toUpperCase())) {
-                    wordScore += letterValues[word.charAt(0).toUpperCase()];
+        for (let i = 0; i < word.length; i++) {
+
+            if (userInputCopyArray.indexOf(word[i]) !== -1) {
+                const property = word[i].toUpperCase();
+                wordScore += letterValues[property];
+                userInputCopyArray.splice(userInputCopyArray.indexOf(word[i]), 1);
+                if (i === word.length - 1) {
+                    //wordScoreObj[word] = wordScore;
+                    wordScoreObj["word"] = word;
+                    wordScoreObj["score"] = wordScore;
+                    wordScoreArray.push(wordScoreObj);
+                    //reset for next word
+                    userInputCopyArray = [...userInputCopy];
+                    wordScore = 0;
+                    wordScoreObj = {};
                 }
-                userInputCopyArray.splice(0, 1);            
-            } else { //if the letter does not exist, then you know the word from the word
-                //list cannot be formed by the letters in the user input
-                wordScoreObj[word] = 0;
+            }
+            else {
+                wordScore = 0;
+                //wordScoreObj[word] = wordScore;
+                wordScoreObj["word"] = word;
+                wordScoreObj["score"] = wordScore;
                 wordScoreArray.push(wordScoreObj);
                 //reset for next word
+                userInputCopyArray = [...userInputCopy];
                 wordScoreObj = {};
                 break;
             }
         }
-        //if all of the letters in the word list have been iterated over, then you know the word can be formed
-        //by the letters in the user input!
-        wordScoreObj[word] = wordScore;
-        wordScoreArray.push(wordScoreObj);
-        //reset for next word
-        wordScoreObj = {};
-        wordScore = 0;
     }
+    sortWordScoreArray(wordScoreArray);
     //sort
+    /*
     wordScoreArray.sort(function(a, b) {
-        if (a.wordScore < b.wordScore) {
+        if (a.score < b.score) {
             return 1;
-        } else if (a.wordScore > b.wordScore) {
+        } else if (a.score > b.score) {
             return -1;
         } else {
             return 0;
         }
-    });
+    }); 
+    */
+
     //Output 5 highest scoring words in Scrabble that can be formed from the letters 
     //entered (not all of the letters have to be used to form a word)
-    console.log(wordScoreArray);
     console.log("The top scoring words are:");
+    for(let i = 0; ((i < wordScoreArray.length) && (i < 5)); i++){//if there are less than 5 words in input? case covered in conditional part
+        console.log(wordScoreArray[i].score + " - " + wordScoreArray[i].word);
+    }
     /*
     for (let i = 0; i < 5; i++) {
         let word = wordScoreArray.keys()[i];
@@ -90,6 +102,18 @@ function handleUserInput(userPrompt, wordScoreArray, response) {
     }
     userPrompt.close();
     */
+}
+ 
+function sortWordScoreArray(wordScoreArray) {
+    wordScoreArray.sort(function(a, b) {
+        if (a.score < b.score) {
+            return 1;
+        } else if (a.score > b.score) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }); 
 }
 
 

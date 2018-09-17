@@ -1,13 +1,17 @@
 // game.js
 //I assume person will input the correct arguments to arr so I don't have to check if arr is undefined when I assign to computerMoves and userMoves
 const arr = process.argv[2] ? JSON.parse(process.argv[2]) : undefined;
-let computerMoves = arr[0];
-let userMoves = arr[1];
+let computerMoves;
+let userMoves;
 
-//unable to match [[0,0],[0,1], [0,2]] output because new line is generated idk i tried to fix it but the format would print on next line
-console.log("Computer will make the following moves: " + arr[0]);
-//similar case here
-console.log("Player will make the following moves: " + arr[1]);
+if (arr !== undefined) {
+    computerMoves = arr[0];
+    userMoves = arr[1];
+    //unable to match [[0,0],[0,1], [0,2]] output because new line is generated idk i tried to fix it but the format would print on next line
+    console.log("Computer will make the following moves: " + arr[0]);
+    //similar case here
+    console.log("Player will make the following moves: " + arr[1]);
+}
 
 
 const tic = require('./tic-tac-toe.js');
@@ -74,10 +78,11 @@ if (userLetter === "O") {
         }    
 
         if (tic.isBoardFull(board)) {
+            console.log("It's a draw!");
             break;
         } else {
             if (tic.getWinnerCols(board) !== undefined || tic.getWinnerDiagonals(board) !== undefined || tic.getWinnerRows(board) !== undefined) {
-                console.log("Computer won!!!");
+                console.log("Computer won!");
                 break;
             } 
         }
@@ -112,6 +117,15 @@ if (userLetter === "O") {
             }
             board = tic.placeLetters(board, userLetter,userMoveAlgebraic);
             console.log(tic.boardToString(board));
+        }
+        if (tic.isBoardFull(board)) {
+            console.log("It's a draw!");
+            break;
+        } else {
+            if (tic.getWinnerCols(board) !== undefined || tic.getWinnerDiagonals(board) !== undefined || tic.getWinnerRows(board) !== undefined) {
+                console.log("Player won!");
+                break;
+            } 
         }
     }    
 } else {//user picked "X" and makes first move
@@ -150,10 +164,11 @@ if (userLetter === "O") {
 
 
         if (tic.isBoardFull(board)) {
+            console.log("It's a draw!");
             break;
         } else {
             if (tic.getWinnerCols(board) !== undefined || tic.getWinnerRows(board) !== undefined || tic.getWinnerDiagonals(board) !== undefined) {
-                console.log("You won!");
+                console.log("Player won!");
                 break;
             }
         }
@@ -188,6 +203,15 @@ if (userLetter === "O") {
             //console.log("Press <ENTER> to show computer's move...");
             board = tic.placeLetters(board, compLetter, tic.cellIndexAlgebraicNot(board, tic.getRandomEmptyCellIndex(board)));
             console.log(tic.boardToString(board));
+        }
+        if (tic.isBoardFull(board)) {
+            console.log("It's a draw!");
+            break;
+        } else {
+            if (tic.getWinnerCols(board) !== undefined || tic.getWinnerDiagonals(board) !== undefined || tic.getWinnerRows(board) !== undefined) {
+                console.log("Computer won!");
+                break;
+            } 
         }
     }
 }

@@ -92,7 +92,7 @@ function handleUserInput(userPrompt, wordScoreArray, response) {
     //Output 5 highest scoring words in Scrabble that can be formed from the letters 
     //entered (not all of the letters have to be used to form a word)
     console.log("The top scoring words are:");
-    for(let i = 0; ((i < wordScoreArray.length) && (i < 5)); i++){//if there are less than 5 words in input? case covered in conditional part
+    for(let i = 0; i < wordScoreArray.length && i < 5; i++){//if there are less than 5 words in input? case covered in conditional part
         console.log(wordScoreArray[i].score + " - " + wordScoreArray[i].word);
     }
     /*
